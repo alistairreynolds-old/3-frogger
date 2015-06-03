@@ -132,7 +132,7 @@ var Engine = (function(global) {
                  * so that we get the benefits of caching these images, since
                  * we're using them over and over.
                  */
-                ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
+                ctx.drawImage(Resources.get(rowImages[row]), col * colWidth, row * rowHeight);
             }
         }
 
@@ -162,6 +162,8 @@ var Engine = (function(global) {
     function reset() {
         // noop
     }
+
+
 
     /* Go ahead and load all of the images we know we're going to need to
      * draw our game level. Then set init as the callback method, so that when
