@@ -10,10 +10,13 @@ var startingLoc = {
     'enemy3':getCoords(0,3),
     'enemy4':getCoords(0,Math.floor(Math.random() * (4 - 1)) + 1), // Additional enemy on a random row
 };
+// Various speed settins for random speed generation, and automatic difficulty changing
 var maxSpeed = 15;
 var minSpeed = 5;
-var absoluteMinSpeed = 3;
-var absoluteMaxSpeed = 25;
+var minMinSpeed = 3;
+var minMaxSpeed = 5;
+var maxMinSpeed = 10;
+var maxMaxSpeed = 25;
 var playerPadding = 20;   // This is to add into the x value of character collision to make it hit the edge of the character as opposed to the character's grid reference
 var squish = new Audio("sounds/squish.mp3");         //http://soundbible.com/677-Squish-Fart.html        http://stackoverflow.com/questions/1933969/sound-effects-in-javascript-html5
 
@@ -121,31 +124,51 @@ var Player = function(x,y) {
             default:
                 break;
         }
-   //     console.log(playerLoc);
         this.render(Resources.get(this.sprite),this.x,this.y);
     }
 
     this.calculateDifficulty = function(){
-        console.log(this.winCounter);
+        var changed = false;
         // Decrease difficulty
-        if(this.loseCounter >= 5 && (minSpeed >= absoluteMinSpeed)){
+        if(this.loseCounter >= 5){
             this.loseCounter = 0;
             this.WinCounter = 0;
-            minSpeed --;
-            maxSpeed --;
-            console.log('decreasing difficulty');
-            console.log('min speed:' + minSpeed);
-            console.log('max speed:' + maxSpeed);
+            if(maxSpeed > minMaxSpeed){
+                maxSpeed --;
+                changed = true;
+            }
+            if(minSpeed > minMinSpeed){
+                minSpeed --;
+                changed = true;
+            }
+            if(changed){
+                console.log('decreasing difficulty');
+                console.log('min speed:' + minSpeed);
+                console.log('max speed:' + maxSpeed);
+            }else{
+                console.log('can\'t lower difficulty any more!');
+            }
         }
         // Increase difficulty
-        if(this.winCounter >= 5 && (maxSpeed <= absoluteMaxSpeed)){
+        if(this.winCounter >= 5){
             this.loseCounter = 0;
             this.winCounter = 0;
-            minSpeed++;
-            maxSpeed++;
             console.log('increasing difficulty');
-            console.log('min speed:' + minSpeed);
-            console.log('max speed:' + maxSpeed);
+            if(maxSpeed < maxMaxSpeed){
+                maxSpeed ++;
+                changed = true;
+            }
+            if(minSpeed < maxMinSpeed){
+                minSpeed ++;
+                changed = true;
+            }
+            if(changed){
+                console.log('increasing difficulty');
+                console.log('min speed:' + minSpeed);
+                console.log('max speed:' + maxSpeed);
+            }else{
+                console.log('can\'t increase difficulty any more!');
+            }
         }
     }
 
