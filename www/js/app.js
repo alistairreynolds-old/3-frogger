@@ -156,7 +156,6 @@ var Player = function(x,y) {
         if(this.winCounter >= 5){
             this.loseCounter = 0;
             this.winCounter = 0;
-            console.log('increasing difficulty');
             if(maxSpeed < MAX_MAX_SPEED){
                 maxSpeed ++;
                 changed = true;
