@@ -10,8 +10,13 @@ var startingLoc = {
     'enemy3':getCoords(0,3),
     'enemy4':getCoords(0,Math.floor(Math.random() * (4 - 1)) + 1), // Additional enemy on a random row
 };
-var maxSpeed=10;
-var minSpeed=3;
+var maxSpeed = 15;
+var minSpeed = 5;
+var absoluteMinSpeed = 3;
+var absoluteMaxSpeed = 25;
+var playerPadding = 20;   // This is to add into the x value of character collision to make it hit the edge of the character as opposed to the character's grid reference
+var squish = new Audio("sounds/squish.mp3");         //http://soundbible.com/677-Squish-Fart.html        http://stackoverflow.com/questions/1933969/sound-effects-in-javascript-html5
+
 
 // Enemies our player must avoid
 var Enemy = function(number,x,y) {
@@ -38,12 +43,26 @@ Enemy.prototype.update = function(dt) {
     this.render;
     if(this.x >= maxLocs.right + (colWidth * 2)){   // Detect if off the screen
         if(Math.random() * (50 - 1) + 1 >= 48){     // Make spawning of new enemies a bit more random
+            this.speed = Math.random() * (maxSpeed - minSpeed) + minSpeed;           // Random speed change if needed for difficulty change
             if(this.number > 3){                   // Last enemy spawn on new random line
                 this.y = (getCoords(0,Math.floor(Math.random() * (4 - 1)) + 1).y);
             }
             this.x = 0 - colWidth;
         }
     }
+    // Check for character collision. +
+    xMin = this.x - colWidth + playerPadding;
+    xMax = this.x + colWidth - playerPadding;
+    if((player.y == this.y) && (player.x > xMin) && (player.x < xMax)){
+        player.x = startingLoc.player.x;
+        player.y = startingLoc.player.y;
+        player.render;
+        squish.play();
+        player.deaths --;
+        player.loseCounter ++;
+        player.calculateDifficulty();
+    }
+
 }
 
 // Draw the enemy on the screen, required method for game
@@ -60,6 +79,11 @@ var Player = function(x,y) {
     this.sprite = 'images/char-boy.png';
     this.x = x;
     this.y = y;
+    // Score and Deaths is total number. Counter is to adjust the difficulty based on win and lose streaks
+    this.score = 0;
+    this.deaths = 0;
+    this.winCounter = 0;
+    this.loseCounter = 0;
     this.update = function(){
     };
     this.render = function(){
@@ -72,6 +96,9 @@ var Player = function(x,y) {
                     this.y -= rowHeight;
                 }else{
                     // game win
+                    this.score ++;
+                    this.winCounter ++;
+                    this.calculateDifficulty();
                     this.x = startingLoc.player.x;
                     this.y = startingLoc.player.y;
                 }
@@ -94,8 +121,34 @@ var Player = function(x,y) {
             default:
                 break;
         }
+   //     console.log(playerLoc);
         this.render(Resources.get(this.sprite),this.x,this.y);
     }
+
+    this.calculateDifficulty = function(){
+        console.log(this.winCounter);
+        // Decrease difficulty
+        if(this.loseCounter >= 5 && (minSpeed >= absoluteMinSpeed)){
+            this.loseCounter = 0;
+            this.WinCounter = 0;
+            minSpeed --;
+            maxSpeed --;
+            console.log('decreasing difficulty');
+            console.log('min speed:' + minSpeed);
+            console.log('max speed:' + maxSpeed);
+        }
+        // Increase difficulty
+        if(this.winCounter >= 5 && (maxSpeed <= absoluteMaxSpeed)){
+            this.loseCounter = 0;
+            this.winCounter = 0;
+            minSpeed++;
+            maxSpeed++;
+            console.log('increasing difficulty');
+            console.log('min speed:' + minSpeed);
+            console.log('max speed:' + maxSpeed);
+        }
+    }
+
 }
 
 
@@ -115,6 +168,8 @@ var allEnemies = [
 function getCoords(x,y) {
     return {'x': (x * colWidth), 'y': (y * rowHeight) - bottomRowExtra + rowHeight};
 }
+
+// Changes game difficulty depending on how the player is doing
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.

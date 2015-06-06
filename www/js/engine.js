@@ -138,6 +138,7 @@ var Engine = (function(global) {
 
 
         renderEntities();
+        renderScore();
     }
 
     /* This function is called by the render function and is called on each game
@@ -153,6 +154,18 @@ var Engine = (function(global) {
         });
 
         player.render();
+    }
+
+    function renderScore(){
+        ctx.font = "30px Arial";
+        ctx.fillStyle = "white";
+        ctx.textAlign = "right";
+        ctx.fillText("Score: " + player.score, 500, 100);
+
+        ctx.font = "30px Arial";
+        ctx.fillStyle = "salmon";
+        ctx.textAlign = "left";
+        ctx.fillText("Sqishes: " + player.deaths, 10, 100);
     }
 
     /* This function does nothing but it could have been a good place to
