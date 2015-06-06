@@ -8,26 +8,24 @@ var startingLoc = {
     'enemy1':getCoords(0,1),
     'enemy2':getCoords(0,2),
     'enemy3':getCoords(0,3),
-    'enemy4':getCoords(0,1),
-    'enemy5':getCoords(0,2),
-    'enemy6':getCoords(0,3)
+    'enemy4':getCoords(0,Math.floor(Math.random() * (4 - 1)) + 1), // Additional enemy on a random row
 };
 var maxSpeed=10;
-var minSpeed=5;
+var minSpeed=3;
 
 // Enemies our player must avoid
-var Enemy = function(x,y) {
+var Enemy = function(number,x,y) {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
 
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
-    getCoords(2,7);
+    // Set starting position and speed
     this.x = x;
     this.y = y;
+    this.number = number;
     this.speed = Math.random() * (maxSpeed - minSpeed) + minSpeed;
-    if(this.y);
 }
 
 // Update the enemy's position, required method for game
@@ -38,6 +36,14 @@ Enemy.prototype.update = function(dt) {
     // all computers.
     this.x = this.x + 1 * dt * this.speed * 50;   // +1 needed so that we don't multiply starting position of 0 so they actually start moving
     this.render;
+    if(this.x >= maxLocs.right + (colWidth * 2)){   // Detect if off the screen
+        if(Math.random() * (50 - 1) + 1 >= 48){     // Make spawning of new enemies a bit more random
+            if(this.number > 3){                   // Last enemy spawn on new random line
+                this.y = (getCoords(0,Math.floor(Math.random() * (4 - 1)) + 1).y);
+            }
+            this.x = 0 - colWidth;
+        }
+    }
 }
 
 // Draw the enemy on the screen, required method for game
@@ -95,14 +101,14 @@ var Player = function(x,y) {
 
 var player = new Player(startingLoc.player.x,startingLoc.player.y);
 var allEnemies = [
-    new Enemy(startingLoc.enemy1.x,startingLoc.enemy1.y),
-    new Enemy(startingLoc.enemy1.x,startingLoc.enemy2.y),
-    new Enemy(startingLoc.enemy1.x,startingLoc.enemy3.y),
+    new Enemy(1,startingLoc.enemy1.x,startingLoc.enemy1.y),
+    new Enemy(2,startingLoc.enemy2.x,startingLoc.enemy2.y),
+    new Enemy(3,startingLoc.enemy3.x,startingLoc.enemy3.y),
+    new Enemy(4,startingLoc.enemy4.x,startingLoc.enemy4.y)
 ];
 
 // So that I don't need to keep remembering or calculating coordinates, this will return the correct coordinates to draw a player/enemy based on grid coordinates
 function getCoords(x,y) {
-    //y--;
     return {'x': (x * colWidth), 'y': (y * rowHeight) - bottomRowExtra + rowHeight};
 }
 
