@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>engine.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>engine.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-comment">/* Engine.js
+ * This file provides the game loop functionality (update entities and render),
+ * draws the initial game board on the screen, and then calls the update and
+ * render methods on your player and enemy objects (defined in your app.js).
+ *
+ * A game engine works by drawing the entire game screen over and over, kind of
+ * like a flipbook you may have created as a kid. When your player moves across
+ * the screen, it may look like just that image/character is moving or being
+ * drawn but that is not the case. What's really happening is the entire "scene"
+ * is being drawn over and over, presenting the illusion of animation.
+ *
+ * This engine is available globally via the Engine variable and it also makes
+ * the canvas' context (ctx) object globally available to make writing app.js
+ * a little simpler to work with.
+ */</span>
+
+<span class="hljs-keyword">var</span> Engine = (<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">global</span>) </span>{
+    <span class="hljs-comment">/* Predefine the variables we'll be using within this scope,
+     * create the canvas element, grab the 2D context for that canvas
+     * set the canvas elements height/width and add it to the DOM.
+     */</span>
+    <span class="hljs-keyword">var</span> doc = global.document,
+        win = global.window,
+        canvas = doc.createElement(<span class="hljs-string">'canvas'</span>),
+        ctx = canvas.getContext(<span class="hljs-string">'2d'</span>),
+        lastTime;
+
+    canvas.width = <span class="hljs-number">505</span>;
+    canvas.height = <span class="hljs-number">606</span>;
+    doc.body.appendChild(canvas);
+
+    <span class="hljs-comment">/* This function serves as the kickoff point for the game loop itself
+     * and handles properly calling the update and render methods.
+     */</span>
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">main</span>(<span class="hljs-params"></span>) </span>{
+        <span class="hljs-comment">/* Get our time delta information which is required if your game
+         * requires smooth animation. Because everyone's computer processes
+         * instructions at different speeds we need a constant value that
+         * would be the same for everyone (regardless of how fast their
+         * computer is) - hurray time!
+         */</span>
+        <span class="hljs-keyword">var</span> now = <span class="hljs-built_in">Date</span>.now(),
+            dt = (now - lastTime) / <span class="hljs-number">1000.0</span>;
+
+        <span class="hljs-comment">/* Call our update/render functions, pass along the time delta to
+         * our update function since it may be used for smooth animation.
+         */</span>
+        update(dt);
+        render();
+
+        <span class="hljs-comment">/* Set our lastTime variable which is used to determine the time delta
+         * for the next time this function is called.
+         */</span>
+        lastTime = now;
+
+        <span class="hljs-comment">/* Use the browser's requestAnimationFrame function to call this
+         * function again as soon as the browser is able to draw another frame.
+         */</span>
+        win.requestAnimationFrame(main);
+    }
+
+    <span class="hljs-comment">/* This function does some initial setup that should only occur once,
+     * particularly setting the lastTime variable that is required for the
+     * game loop.
+     */</span>
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">init</span>(<span class="hljs-params"></span>) </span>{
+        reset();
+        lastTime = <span class="hljs-built_in">Date</span>.now();
+        main();
+    }
+
+    <span class="hljs-comment">/* This function is called by main (our game loop) and itself calls all
+     * of the functions which may need to update entity's data. Based on how
+     * you implement your collision detection (when two entities occupy the
+     * same space, for instance when your character should die), you may find
+     * the need to add an additional function call here. For now, we've left
+     * it commented out - you may or may not want to implement this
+     * functionality this way (you could just implement collision detection
+     * on the entities themselves within your app.js file).
+     */</span>
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">update</span>(<span class="hljs-params">dt</span>) </span>{
+        updateEntities(dt);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>checkCollisions();</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    }
+
+    <span class="hljs-comment">/* This is called by the update function  and loops through all of the
+     * objects within your allEnemies array as defined in app.js and calls
+     * their update() methods. It will then call the update function for your
+     * player object. These update methods should focus purely on updating
+     * the data/properties related to  the object. Do your drawing in your
+     * render methods.
+     */</span>
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">updateEntities</span>(<span class="hljs-params">dt</span>) </span>{
+        allEnemies.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">enemy</span>) </span>{
+            enemy.update(dt);
+        });
+        player.update();
+    }
+
+    <span class="hljs-comment">/* This function initially draws the "game level", it will then call
+     * the renderEntities function. Remember, this function is called every
+     * game tick (or loop of the game engine) because that's how games work -
+     * they are flipbooks creating the illusion of animation but in reality
+     * they are just drawing the entire screen over and over.
+     */</span>
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">render</span>(<span class="hljs-params"></span>) </span>{
+        <span class="hljs-comment">/* This array holds the relative URL to the image used
+         * for that particular row of the game level.
+         */</span>
+        <span class="hljs-keyword">var</span> rowImages = [
+                <span class="hljs-string">'images/water-block.png'</span>,   <span class="hljs-comment">// Top row is water</span>
+                <span class="hljs-string">'images/stone-block.png'</span>,   <span class="hljs-comment">// Row 1 of 3 of stone</span>
+                <span class="hljs-string">'images/stone-block.png'</span>,   <span class="hljs-comment">// Row 2 of 3 of stone</span>
+                <span class="hljs-string">'images/stone-block.png'</span>,   <span class="hljs-comment">// Row 3 of 3 of stone</span>
+                <span class="hljs-string">'images/grass-block.png'</span>,   <span class="hljs-comment">// Row 1 of 2 of grass</span>
+                <span class="hljs-string">'images/grass-block.png'</span>    <span class="hljs-comment">// Row 2 of 2 of grass</span>
+            ],
+            numRows = <span class="hljs-number">6</span>,
+            numCols = <span class="hljs-number">5</span>,
+            row, col;
+
+        <span class="hljs-comment">/* Loop through the number of rows and columns we've defined above
+         * and, using the rowImages array, draw the correct image for that
+         * portion of the "grid"
+         */</span>
+        <span class="hljs-keyword">for</span> (row = <span class="hljs-number">0</span>; row &lt; numRows; row++) {
+            <span class="hljs-keyword">for</span> (col = <span class="hljs-number">0</span>; col &lt; numCols; col++) {
+                <span class="hljs-comment">/* The drawImage function of the canvas' context element
+                 * requires 3 parameters: the image to draw, the x coordinate
+                 * to start drawing and the y coordinate to start drawing.
+                 * We're using our Resources helpers to refer to our images
+                 * so that we get the benefits of caching these images, since
+                 * we're using them over and over.
+                 */</span>
+                ctx.drawImage(Resources.get(rowImages[row]), col * colWidth, row * rowHeight);
+            }
+        }
+
+
+        renderEntities();
+        renderScore();
+    }
+
+    <span class="hljs-comment">/* This function is called by the render function and is called on each game
+     * tick. It's purpose is to then call the render functions you have defined
+     * on your enemy and player entities within app.js
+     */</span>
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">renderEntities</span>(<span class="hljs-params"></span>) </span>{
+        <span class="hljs-comment">/* Loop through all of the objects within the allEnemies array and call
+         * the render function you have defined.
+         */</span>
+        allEnemies.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">enemy</span>) </span>{
+            enemy.render();
+        });
+
+        player.render();
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">renderScore</span>(<span class="hljs-params"></span>)</span>{
+        ctx.font = <span class="hljs-string">'30px Arial'</span>;
+        ctx.fillStyle = <span class="hljs-string">'white'</span>;
+        ctx.textAlign = <span class="hljs-string">'right'</span>;
+        ctx.fillText(<span class="hljs-string">'Score: '</span> + player.score, <span class="hljs-number">500</span>, <span class="hljs-number">100</span>);
+
+        ctx.font = <span class="hljs-string">'30px Arial'</span>;
+        ctx.fillStyle = <span class="hljs-string">'salmon'</span>;
+        ctx.textAlign = <span class="hljs-string">'left'</span>;
+        ctx.fillText(<span class="hljs-string">'Sqishes: '</span> + player.deaths, <span class="hljs-number">10</span>, <span class="hljs-number">100</span>);
+    }
+
+    <span class="hljs-comment">/* This function does nothing but it could have been a good place to
+     * handle game reset states - maybe a new game menu or a game over screen
+     * those sorts of things. It's only called once by the init() method.
+     */</span>
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">reset</span>(<span class="hljs-params"></span>) </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>noop</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    }
+
+
+
+    <span class="hljs-comment">/* Go ahead and load all of the images we know we're going to need to
+     * draw our game level. Then set init as the callback method, so that when
+     * all of these images are properly loaded our game will start.
+     */</span>
+    Resources.load([
+        <span class="hljs-string">'images/stone-block.png'</span>,
+        <span class="hljs-string">'images/water-block.png'</span>,
+        <span class="hljs-string">'images/grass-block.png'</span>,
+        <span class="hljs-string">'images/enemy-bug.png'</span>,
+        <span class="hljs-string">'images/char-boy.png'</span>
+    ]);
+    Resources.onReady(init);
+
+    <span class="hljs-comment">/* Assign the canvas' context object to the global variable (the window
+     * object when run in a browser) so that developer's can use it more easily
+     * from within their app.js files.
+     */</span>
+    global.ctx = ctx;
+})(<span class="hljs-keyword">this</span>);</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

@@ -57,7 +57,7 @@ var Engine = (function(global) {
          * function again as soon as the browser is able to draw another frame.
          */
         win.requestAnimationFrame(main);
-    };
+    }
 
     /* This function does some initial setup that should only occur once,
      * particularly setting the lastTime variable that is required for the
@@ -157,15 +157,15 @@ var Engine = (function(global) {
     }
 
     function renderScore(){
-        ctx.font = "30px Arial";
-        ctx.fillStyle = "white";
-        ctx.textAlign = "right";
-        ctx.fillText("Score: " + player.score, 500, 100);
+        ctx.font = '30px Arial';
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'right';
+        ctx.fillText('Score: ' + player.score, 500, 100);
 
-        ctx.font = "30px Arial";
-        ctx.fillStyle = "salmon";
-        ctx.textAlign = "left";
-        ctx.fillText("Sqishes: " + player.deaths, 10, 100);
+        ctx.font = '30px Arial';
+        ctx.fillStyle = 'salmon';
+        ctx.textAlign = 'left';
+        ctx.fillText('Sqishes: ' + player.deaths, 10, 100);
     }
 
     /* This function does nothing but it could have been a good place to

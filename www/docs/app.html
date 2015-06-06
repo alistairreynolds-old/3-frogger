@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>app.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>app.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <p>Constants</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> COL_WIDTH = <span class="hljs-number">101</span>;
+<span class="hljs-keyword">var</span> ROW_HEIGHT = <span class="hljs-number">83</span>;
+<span class="hljs-keyword">var</span> BOTTOM_ROW_EXTRA = <span class="hljs-number">94</span>;
+<span class="hljs-keyword">var</span> MAX_LOCS = {<span class="hljs-string">'bottom'</span>: <span class="hljs-number">327</span>, <span class="hljs-string">'top'</span>: <span class="hljs-number">78</span>, <span class="hljs-string">'left'</span>: <span class="hljs-number">1</span>, <span class="hljs-string">'right'</span>: <span class="hljs-number">303</span>, <span class="hljs-string">'middle'</span>: <span class="hljs-number">150</span>};   <span class="hljs-comment">// max locs there so we can stop the player jumping off the screen, and middle so we have a decent minimum point at where to add more enemies</span>
+<span class="hljs-keyword">var</span> startingLoc = {
+    <span class="hljs-string">'player'</span>:getCoords(<span class="hljs-number">2</span>,<span class="hljs-number">5</span>),
+    <span class="hljs-string">'enemy1'</span>:getCoords(<span class="hljs-number">0</span>,<span class="hljs-number">1</span>),
+    <span class="hljs-string">'enemy2'</span>:getCoords(<span class="hljs-number">0</span>,<span class="hljs-number">2</span>),
+    <span class="hljs-string">'enemy3'</span>:getCoords(<span class="hljs-number">0</span>,<span class="hljs-number">3</span>),
+    <span class="hljs-string">'enemy4'</span>:getCoords(<span class="hljs-number">0</span>,<span class="hljs-built_in">Math</span>.floor(<span class="hljs-built_in">Math</span>.random() * (<span class="hljs-number">4</span> - <span class="hljs-number">1</span>)) + <span class="hljs-number">1</span>), <span class="hljs-comment">// Additional enemy on a random row</span>
+};
+<span class="hljs-keyword">var</span> SQUISH = <span class="hljs-keyword">new</span> Audio(<span class="hljs-string">'sounds/squish.mp3'</span>);         <span class="hljs-comment">//http://soundbible.com/677-Squish-Fart.html        http://stackoverflow.com/questions/1933969/sound-effects-in-javascript-html5</span>
+<span class="hljs-keyword">var</span> PLAYER_PADDING = <span class="hljs-number">20</span>;   <span class="hljs-comment">// This is to add into the x value of character collision to make it hit the edge of the character as opposed to the character's grid reference</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Various speed settins for random speed generation, and automatic difficulty changing</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> MIN_MIN_SPEED = <span class="hljs-number">3</span>;
+<span class="hljs-keyword">var</span> MIN_MAX_SPEED = <span class="hljs-number">5</span>;
+<span class="hljs-keyword">var</span> MAX_MIN_SPEED = <span class="hljs-number">10</span>;
+<span class="hljs-keyword">var</span> MAX_MAX_SPEED = <span class="hljs-number">25</span>;
+<span class="hljs-keyword">var</span> maxSpeed = <span class="hljs-number">15</span>;
+<span class="hljs-keyword">var</span> minSpeed = <span class="hljs-number">5</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Enemies our player must avoid</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> Enemy = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">number,x,y</span>) </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Variables applied to each of our instances go here,
+we’ve provided one for you to get started</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>The image/sprite for our enemies, this uses
+a helper we’ve provided to easily load images</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.sprite = <span class="hljs-string">'images/enemy-bug.png'</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Set starting position and speed</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.x = x;
+    <span class="hljs-keyword">this</span>.y = y;
+    <span class="hljs-keyword">this</span>.number = number;
+    <span class="hljs-keyword">this</span>.speed = <span class="hljs-built_in">Math</span>.random() * (maxSpeed - minSpeed) + minSpeed;
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Update the enemy’s position, required method for game
+Parameter: dt, a time delta between ticks</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>Enemy.prototype.update = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">dt</span>) </span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>You should multiply any movement by the dt parameter
+which will ensure the game runs at the same speed for
+all computers.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.x = <span class="hljs-keyword">this</span>.x + <span class="hljs-number">1</span> * dt * <span class="hljs-keyword">this</span>.speed * <span class="hljs-number">50</span>;   <span class="hljs-comment">// +1 needed so that we don't multiply starting position of 0 so they actually start moving</span>
+    <span class="hljs-keyword">this</span>.render();
+    <span class="hljs-keyword">if</span>(<span class="hljs-keyword">this</span>.x &gt;= MAX_LOCS.right + (COL_WIDTH * <span class="hljs-number">2</span>)){   <span class="hljs-comment">// Detect if off the screen</span>
+        <span class="hljs-keyword">if</span>(<span class="hljs-built_in">Math</span>.random() * (<span class="hljs-number">50</span> - <span class="hljs-number">1</span>) + <span class="hljs-number">1</span> &gt;= <span class="hljs-number">48</span>){     <span class="hljs-comment">// Make spawning of new enemies a bit more random</span>
+            <span class="hljs-keyword">this</span>.speed = <span class="hljs-built_in">Math</span>.random() * (maxSpeed - minSpeed) + minSpeed;           <span class="hljs-comment">// Random speed change if needed for difficulty change</span>
+            <span class="hljs-keyword">if</span>(<span class="hljs-keyword">this</span>.number &gt; <span class="hljs-number">3</span>){                   <span class="hljs-comment">// Last enemy spawn on new random line</span>
+                <span class="hljs-keyword">this</span>.y = (getCoords(<span class="hljs-number">0</span>,<span class="hljs-built_in">Math</span>.floor(<span class="hljs-built_in">Math</span>.random() * (<span class="hljs-number">4</span> - <span class="hljs-number">1</span>)) + <span class="hljs-number">1</span>).y);
+            }
+            <span class="hljs-keyword">this</span>.x = <span class="hljs-number">0</span> - COL_WIDTH;
+        }
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Check for character collision. +</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> xMin = <span class="hljs-keyword">this</span>.x - COL_WIDTH + PLAYER_PADDING;
+    <span class="hljs-keyword">var</span> xMax = <span class="hljs-keyword">this</span>.x + COL_WIDTH - PLAYER_PADDING;
+    <span class="hljs-keyword">if</span>((player.y == <span class="hljs-keyword">this</span>.y) &amp;&amp; (player.x &gt; xMin) &amp;&amp; (player.x &lt; xMax)){
+        player.x = startingLoc.player.x;
+        player.y = startingLoc.player.y;
+        player.render();
+        SQUISH.play();
+        player.deaths --;
+        player.loseCounter ++;
+        player.calculateDifficulty();
+    }
+
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Draw the enemy on the screen, required method for game</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>Enemy.prototype.render = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    ctx.drawImage(Resources.get(<span class="hljs-keyword">this</span>.sprite), <span class="hljs-keyword">this</span>.x, <span class="hljs-keyword">this</span>.y);
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>Now write your own player class
+This class requires an update(), render() and
+a handleInput() method.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+<span class="hljs-keyword">var</span> Player = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">x,y</span>) </span>{
+    <span class="hljs-keyword">this</span>.sprite = <span class="hljs-string">'images/char-boy.png'</span>;
+    <span class="hljs-keyword">this</span>.x = x;
+    <span class="hljs-keyword">this</span>.y = y;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>Score and Deaths is total number. Counter is to adjust the difficulty based on win and lose streaks</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.score = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">this</span>.deaths = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">this</span>.winCounter = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">this</span>.loseCounter = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">this</span>.update = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+    };
+    <span class="hljs-keyword">this</span>.render = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+        ctx.drawImage(Resources.get(<span class="hljs-keyword">this</span>.sprite), <span class="hljs-keyword">this</span>.x,<span class="hljs-keyword">this</span>.y);
+    };
+    <span class="hljs-keyword">this</span>.handleInput = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">key</span>)</span>{
+        <span class="hljs-keyword">switch</span>(key){
+            <span class="hljs-keyword">case</span> <span class="hljs-string">'up'</span>:
+                <span class="hljs-keyword">if</span>(<span class="hljs-keyword">this</span>.y &gt;= MAX_LOCS.top){
+                    <span class="hljs-keyword">this</span>.y -= ROW_HEIGHT;
+                }<span class="hljs-keyword">else</span>{</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>game win</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                    <span class="hljs-keyword">this</span>.score ++;
+                    <span class="hljs-keyword">this</span>.winCounter ++;
+                    <span class="hljs-keyword">this</span>.calculateDifficulty();
+                    <span class="hljs-keyword">this</span>.x = startingLoc.player.x;
+                    <span class="hljs-keyword">this</span>.y = startingLoc.player.y;
+                }
+                <span class="hljs-keyword">break</span>;
+            <span class="hljs-keyword">case</span> <span class="hljs-string">'down'</span>:
+                <span class="hljs-keyword">if</span>(<span class="hljs-keyword">this</span>.y &lt;= MAX_LOCS.bottom){
+                    <span class="hljs-keyword">this</span>.y += ROW_HEIGHT;
+                }
+                <span class="hljs-keyword">break</span>;
+            <span class="hljs-keyword">case</span> <span class="hljs-string">'left'</span>:
+                <span class="hljs-keyword">if</span>(<span class="hljs-keyword">this</span>.x &gt;= MAX_LOCS.left){
+                    <span class="hljs-keyword">this</span>.x -= COL_WIDTH;
+                }
+                <span class="hljs-keyword">break</span>;
+            <span class="hljs-keyword">case</span> <span class="hljs-string">'right'</span>:
+                <span class="hljs-keyword">if</span>(<span class="hljs-keyword">this</span>.x &lt;= MAX_LOCS.right){
+                    <span class="hljs-keyword">this</span>.x += COL_WIDTH;
+                }
+                <span class="hljs-keyword">break</span>;
+            <span class="hljs-keyword">default</span>:
+                <span class="hljs-keyword">break</span>;
+        }
+        <span class="hljs-keyword">this</span>.render(Resources.get(<span class="hljs-keyword">this</span>.sprite),<span class="hljs-keyword">this</span>.x,<span class="hljs-keyword">this</span>.y);
+    };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>Changes game difficulty depending on how the player is doing</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">this</span>.calculateDifficulty = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+        <span class="hljs-keyword">var</span> changed = <span class="hljs-literal">false</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>Decrease difficulty</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">if</span>(<span class="hljs-keyword">this</span>.loseCounter &gt;= <span class="hljs-number">5</span>){
+            <span class="hljs-keyword">this</span>.loseCounter = <span class="hljs-number">0</span>;
+            <span class="hljs-keyword">this</span>.WinCounter = <span class="hljs-number">0</span>;
+            <span class="hljs-keyword">if</span>(maxSpeed &gt; MIN_MAX_SPEED){
+                maxSpeed --;
+                changed = <span class="hljs-literal">true</span>;
+            }
+            <span class="hljs-keyword">if</span>(minSpeed &gt; MIN_MIN_SPEED){
+                minSpeed --;
+                changed = <span class="hljs-literal">true</span>;
+            }
+            <span class="hljs-keyword">if</span>(changed){
+                <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'decreasing difficulty'</span>);
+                <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'min speed:'</span> + minSpeed);
+                <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'max speed:'</span> + maxSpeed);
+            }<span class="hljs-keyword">else</span>{
+                <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'can\'t lower difficulty any more!'</span>);
+            }
+        }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>Increase difficulty</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">if</span>(<span class="hljs-keyword">this</span>.winCounter &gt;= <span class="hljs-number">5</span>){
+            <span class="hljs-keyword">this</span>.loseCounter = <span class="hljs-number">0</span>;
+            <span class="hljs-keyword">this</span>.winCounter = <span class="hljs-number">0</span>;
+            <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'increasing difficulty'</span>);
+            <span class="hljs-keyword">if</span>(maxSpeed &lt; MAX_MAX_SPEED){
+                maxSpeed ++;
+                changed = <span class="hljs-literal">true</span>;
+            }
+            <span class="hljs-keyword">if</span>(minSpeed &lt; MAX_MIN_SPEED){
+                minSpeed ++;
+                changed = <span class="hljs-literal">true</span>;
+            }
+            <span class="hljs-keyword">if</span>(changed){
+                <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'increasing difficulty'</span>);
+                <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'min speed:'</span> + minSpeed);
+                <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'max speed:'</span> + maxSpeed);
+            }<span class="hljs-keyword">else</span>{
+                <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'can\'t increase difficulty any more!'</span>);
+            }
+        }
+    };
+
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>Now instantiate your objects.
+Place all enemy objects in an array called allEnemies
+Place the player object in a variable called player</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+<span class="hljs-keyword">var</span> player = <span class="hljs-keyword">new</span> Player(startingLoc.player.x,startingLoc.player.y);
+<span class="hljs-keyword">var</span> allEnemies = [
+    <span class="hljs-keyword">new</span> Enemy(<span class="hljs-number">1</span>,startingLoc.enemy1.x,startingLoc.enemy1.y),
+    <span class="hljs-keyword">new</span> Enemy(<span class="hljs-number">2</span>,startingLoc.enemy2.x,startingLoc.enemy2.y),
+    <span class="hljs-keyword">new</span> Enemy(<span class="hljs-number">3</span>,startingLoc.enemy3.x,startingLoc.enemy3.y),
+    <span class="hljs-keyword">new</span> Enemy(<span class="hljs-number">4</span>,startingLoc.enemy4.x,startingLoc.enemy4.y)
+];</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p>So that I don’t need to keep remembering or calculating coordinates, this will return the correct coordinates to draw a player/enemy based on grid coordinates</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getCoords</span>(<span class="hljs-params">x,y</span>) </span>{
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">'x'</span>: (x * COL_WIDTH), <span class="hljs-string">'y'</span>: (y * ROW_HEIGHT) - BOTTOM_ROW_EXTRA + ROW_HEIGHT};
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <p>This listens for key presses and sends the keys to your
+Player.handleInput() method. You don’t need to modify this.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-built_in">document</span>.addEventListener(<span class="hljs-string">'keyup'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">e</span>) </span>{
+    <span class="hljs-keyword">var</span> allowedKeys = {
+        <span class="hljs-number">37</span>: <span class="hljs-string">'left'</span>,
+        <span class="hljs-number">38</span>: <span class="hljs-string">'up'</span>,
+        <span class="hljs-number">39</span>: <span class="hljs-string">'right'</span>,
+        <span class="hljs-number">40</span>: <span class="hljs-string">'down'</span>
+    };
+
+    player.handleInput(allowedKeys[e.keyCode]);
+});</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
