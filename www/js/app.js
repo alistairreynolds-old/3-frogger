@@ -70,6 +70,10 @@ var Player = function(x,y) {
             case 'up':
                 if(this.y >= maxLocs.top){
                     this.y -= rowHeight;
+                }else{
+                    // game win
+                    this.x = startingLoc.player.x;
+                    this.y = startingLoc.player.y;
                 }
                 break;
             case 'down':
